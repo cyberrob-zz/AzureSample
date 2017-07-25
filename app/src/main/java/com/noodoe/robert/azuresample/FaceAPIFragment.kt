@@ -2,13 +2,11 @@ package com.noodoe.robert.azuresample
 
 import android.app.Activity.RESULT_OK
 import android.app.ProgressDialog
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.MediaStore
@@ -19,7 +17,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
-import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding.view.RxView
 import com.microsoft.projectoxford.face.FaceServiceClient
 import com.microsoft.projectoxford.face.FaceServiceRestClient
 import com.microsoft.projectoxford.face.contract.Face
@@ -47,8 +45,6 @@ class FaceAPIFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var mParam1: String? = null
     private var mParam2: String? = null
-
-    private var mListener: OnFragmentInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -127,7 +123,6 @@ class FaceAPIFragment : Fragment() {
                     publishProgress("Detection failed")
                     return null
                 }
-
             }
 
             override fun onPreExecute() {
@@ -148,6 +143,7 @@ class FaceAPIFragment : Fragment() {
         detectTask.execute(inputStream)
     }
 
+
     private fun drawFaceRectanglesOnBitmap(originalBitmap: Bitmap, faces: Array<Face>): Bitmap? {
         val bitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true)
         val canvas = Canvas(bitmap)
@@ -167,41 +163,6 @@ class FaceAPIFragment : Fragment() {
                     paint)
         }
         return bitmap
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        if (mListener != null) {
-            mListener!!.onFragmentInteraction(uri)
-        }
-    }
-
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            mListener = context
-        } else {
-            throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
-        }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        mListener = null
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
-     */
-    interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri)
     }
 
     companion object {
@@ -226,6 +187,15 @@ class FaceAPIFragment : Fragment() {
             val args = Bundle()
             args.putString(ARG_PARAM1, param1)
             args.putString(ARG_PARAM2, param2)
+            fragment.arguments = args
+            return fragment
+        }
+
+        fun newInstance(): FaceAPIFragment {
+            val fragment = FaceAPIFragment()
+            val args = Bundle()
+            args.putString(ARG_PARAM1, "")
+            args.putString(ARG_PARAM2, "")
             fragment.arguments = args
             return fragment
         }

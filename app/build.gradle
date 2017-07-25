@@ -40,9 +40,12 @@ dependencies {
 
 
     // RxBinding
-    compile 'com.jakewharton.rxbinding2:rxbinding-kotlin:2.0.0'
-    compile 'com.jakewharton.rxbinding2:rxbinding-support-v4-kotlin:2.0.0'
-    compile 'com.jakewharton.rxbinding2:rxbinding-appcompat-v7-kotlin:2.0.0'
-    compile 'com.jakewharton.rxbinding2:rxbinding-design-kotlin:2.0.0'
-    compile 'com.jakewharton.rxbinding2:rxbinding-recyclerview-v7-kotlin:2.0.0'
+    compile 'com.jakewharton.rxbinding:rxbinding-kotlin:1.0.1'
+    compile 'com.jakewharton.rxbinding:rxbinding-support-v4-kotlin:1.0.1'
+    compile 'com.jakewharton.rxbinding:rxbinding-appcompat-v7-kotlin:1.0.1'
+    compile 'com.jakewharton.rxbinding:rxbinding-design-kotlin:1.0.1'
+    compile 'com.jakewharton.rxbinding:rxbinding-recyclerview-v7-kotlin:1.0.1'
+
+    compile 'io.reactivex:rxandroid:1.1.0'
+    compile 'io.reactivex:rxjava:1.2.6'
 }
