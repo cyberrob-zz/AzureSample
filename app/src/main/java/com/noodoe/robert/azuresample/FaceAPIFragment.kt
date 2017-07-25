@@ -17,6 +17,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import com.jakewharton.rxbinding.view.RxView
 import com.microsoft.projectoxford.face.FaceServiceClient
 import com.microsoft.projectoxford.face.FaceServiceRestClient
@@ -60,6 +62,7 @@ class FaceAPIFragment : Fragment() {
         return inflater!!.inflate(R.layout.fragment_face_api, container, false)
     }
 
+    private lateinit var textView: TextView
     private lateinit var button: Button
     private lateinit var imageView: ImageView
     private lateinit var faceServiceClient: FaceServiceClient
@@ -69,6 +72,7 @@ class FaceAPIFragment : Fragment() {
 
         button = view?.findViewById<Button>(R.id.button1) as Button
         imageView = view?.findViewById<ImageView>(R.id.imageView1)
+        textView = view?.findViewById<TextView>(R.id.textView)
 
         RxView.clicks(button!!)
                 .throttleFirst(2, TimeUnit.SECONDS)
@@ -102,25 +106,36 @@ class FaceAPIFragment : Fragment() {
         val outputStream = ByteArrayOutputStream()
         imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
         val inputStream = ByteArrayInputStream(outputStream.toByteArray())
-        val detectTask = object : AsyncTask<InputStream, String, Array<Face>>() {
+        val detectTask = object : AsyncTask<InputStream, String, Array<Face>?>() {
+            var responseMessage = ""
             override fun doInBackground(vararg params: InputStream): Array<Face>? {
                 try {
-                    publishProgress("Detecting...")
+                    responseMessage = "Detecting..."
+                    textView.text = responseMessage
+                    publishProgress(responseMessage)
                     val result = faceServiceClient.detect(
                             params[0],
                             true, // returnFaceId
                             false, null// returnFaceAttributes: a string like "age, gender"
                     )// returnFaceLandmarks
                     if (result == null) {
-                        publishProgress("Detection Finished. Nothing detected")
+                        responseMessage = "Detection Finished. Nothing detected"
+                        publishProgress(responseMessage)
+                        Log.d(TAG, responseMessage)
+                        textView.text = responseMessage
                         return null
                     }
-                    publishProgress(
-                            String.format("Detection Finished. %d face(s) detected",
-                                    result!!.size))
+                    responseMessage = String.format("Detection Finished. %d face(s) detected",
+                            result!!.size)
+                    publishProgress(responseMessage)
+                    Log.d(TAG, responseMessage)
+                    textView.text = responseMessage
                     return result
                 } catch (e: Exception) {
-                    publishProgress("Detection failed")
+                    responseMessage = "Detection failed"
+                    publishProgress(responseMessage)
+                    Log.e(TAG, responseMessage)
+                    textView.text = responseMessage
                     return null
                 }
             }
@@ -133,7 +148,7 @@ class FaceAPIFragment : Fragment() {
                 detectionProgressDialog?.setMessage(progress[0])
             }
 
-            override fun onPostExecute(result: Array<Face>) {
+            override fun onPostExecute(result: Array<Face>?) {
                 detectionProgressDialog?.dismiss()
                 if (result == null) return
                 imageView.setImageBitmap(drawFaceRectanglesOnBitmap(imageBitmap, result))
@@ -151,7 +166,7 @@ class FaceAPIFragment : Fragment() {
         paint.isAntiAlias = true
         paint.style = Paint.Style.STROKE
         paint.color = Color.RED
-        val stokeWidth = 2
+        val stokeWidth = 5
         paint.strokeWidth = stokeWidth.toFloat()
         faces?.forEach { face ->
             val faceRectangle = face.faceRectangle
